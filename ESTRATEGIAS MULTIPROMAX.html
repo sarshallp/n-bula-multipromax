@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estrategias</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:#0b0a12;
+    --surface:#141020;
+    --surface-2:#1c1630;
+    --surface-3:#251c3d;
+    --border:#2c2348;
+    --border-soft:#221b39;
+    --accent:#a78bfa;
+    --accent-bright:#c4b5fd;
+    --accent-deep:#7c3aed;
+    --accent-soft:rgba(167,139,250,0.14);
+    --text:#f2f0fb;
+    --text-dim:#aea3cf;
+    --text-faint:#716896;
+    --up:#3ddc97;
+    --up-soft:rgba(61,220,151,0.14);
+    --down:#fb7185;
+    --down-soft:rgba(251,113,133,0.14);
+    --warn:#fbbf60;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,monospace;
+    --display:'Fraunces',ui-serif,Georgia,serif;
+    --body:'Manrope',ui-sans-serif,sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(124,58,237,0.16), transparent 45%),
+      radial-gradient(circle at 90% 15%, rgba(167,139,250,0.10), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    padding-inline:18px;
+    padding-block:28px 60px;
+    min-height:100%;
+  }
+  .wrap{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:18px;}
+
+  /* header */
+  .brand{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .brand-left{display:flex;align-items:center;gap:10px;}
+  .mark{
+    width:38px;height:38px;border-radius:11px;
+    background:linear-gradient(155deg,var(--accent-deep),var(--accent));
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-weight:700;font-size:16px;color:#0b0a12;
+    box-shadow:0 6px 18px -6px rgba(124,58,237,0.6);
+    flex:none;
+  }
+  h1{font-family:var(--display);font-weight:600;font-style:italic;font-size:21px;letter-spacing:0.01em;margin:0;}
+  .tagline{font-size:11.5px;color:var(--text-faint);margin-top:1px;}
+  .gear{
+    width:36px;height:36px;border-radius:10px;border:1px solid var(--border);
+    background:var(--surface);color:var(--text-dim);display:flex;align-items:center;justify-content:center;
+    cursor:pointer;flex:none;
+  }
+  .gear:hover{color:var(--accent-bright);border-color:var(--accent-deep);}
+
+  .disclaimer{
+    font-size:11px;line-height:1.5;color:var(--text-faint);
+    background:var(--surface);border:1px solid var(--border-soft);border-radius:12px;
+    padding:10px 12px;
+  }
+  .disclaimer b{color:var(--text-dim);}
+
+  /* card base */
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:16px;
+  }
+  .card-title{
+    font-family:var(--display);font-weight:700;font-size:12.5px;
+    letter-spacing:0.06em;text-transform:uppercase;color:var(--text-dim);
+    margin:0 0 12px 0;display:flex;align-items:center;justify-content:space-between;
+  }
+
+  /* settings panel */
+  #settingsPanel{display:none;}
+  #settingsPanel.open{display:flex;flex-direction:column;gap:10px;}
+  .field-label{font-size:12px;color:var(--text-dim);}
+  .field-row{display:flex;gap:8px;}
+  input[type="password"],input[type="text"]{
+    flex:1;background:var(--surface-2);border:1px solid var(--border);
+    border-radius:10px;padding:10px 12px;color:var(--text);font-family:var(--mono);font-size:13px;
+    outline:none;min-width:0;
+  }
+  input:focus{border-color:var(--accent-deep);}
+  .btn{
+    font-family:var(--body);font-weight:700;font-size:13px;border-radius:10px;
+    border:1px solid var(--border);background:var(--surface-2);color:var(--text);
+    padding:10px 14px;cursor:pointer;
+  }
+  .btn:hover{border-color:var(--accent-deep);color:var(--accent-bright);}
+  .btn-ghost{background:transparent;}
+  .hint-link{color:var(--accent-bright);text-decoration:none;border-bottom:1px dotted var(--accent-deep);}
+  .key-status{font-size:11.5px;display:flex;align-items:center;gap:6px;}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--down);flex:none;}
+  .dot.ok{background:var(--up);}
+
+  /* chips */
+  .chip-grid{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    font-family:var(--mono);font-size:12.5px;font-weight:600;
+    padding:9px 13px;border-radius:10px;border:1px solid var(--border);
+    background:var(--surface-2);color:var(--text-dim);cursor:pointer;
+    transition:border-color .15s,color .15s,background .15s;
+  }
+  .chip[aria-pressed="true"]{
+    background:var(--accent-soft);border-color:var(--accent-deep);color:var(--accent-bright);
+  }
+  .chip:hover{border-color:var(--accent-deep);}
+
+  /* asset search picker */
+  .asset-picker{position:relative;}
+  .asset-search{
+    width:100%;background:var(--surface-2);border:1px solid var(--border);
+    border-radius:10px;padding:12px 14px;color:var(--text);font-family:var(--mono);font-size:14px;
+    outline:none;
+  }
+  .asset-search:focus{border-color:var(--accent-deep);}
+  .asset-current{
+    margin-top:8px;font-size:11.5px;color:var(--text-faint);
+  }
+  .asset-current b{color:var(--accent-bright);font-family:var(--mono);}
+  .asset-list{
+    display:none;position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:20;
+    background:var(--surface-2);border:1px solid var(--border);border-radius:12px;
+    max-height:240px;overflow-y:auto;padding:6px;
+  }
+  .asset-list.open{display:block;}
+  .asset-item{
+    padding:9px 10px;border-radius:8px;font-family:var(--mono);font-size:13px;color:var(--text-dim);
+    cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+  }
+  .asset-item:hover{background:var(--surface-3);color:var(--text);}
+  .asset-item.selected{background:var(--accent-soft);color:var(--accent-bright);}
+  .asset-empty{padding:12px 10px;font-size:12.5px;color:var(--text-faint);text-align:center;}
+  .asset-tag{
+    font-size:9px;text-transform:uppercase;letter-spacing:.04em;font-family:var(--body);font-weight:700;
+    padding:2px 7px;border-radius:6px;background:var(--surface-3);color:var(--text-faint);
+  }
+  .asset-tag.crypto{color:var(--accent-bright);background:var(--accent-soft);}
+
+  /* engine grid */
+  .engine-toggle{font-size:11px;color:var(--text-faint);cursor:pointer;font-weight:600;}
+  .engine-toggle:hover{color:var(--accent-bright);}
+  #engineGrid{
+    display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  }
+  #engineGrid.hidden{display:none;}
+  .ind{
+    background:var(--surface-2);border:1px solid var(--border-soft);border-radius:10px;
+    padding:9px 10px;
+  }
+  .ind-label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-faint);}
+  .ind-value{font-family:var(--mono);font-size:13.5px;font-weight:600;margin-top:2px;color:var(--text);}
+  .ind-value.up{color:var(--up);}
+  .ind-value.down{color:var(--down);}
+
+  .spark-wrap{margin-top:12px;}
+  #sparkline{width:100%;height:64px;display:block;}
+
+  /* generate button */
+  .generate-btn{
+    width:100%;padding:16px;border-radius:14px;border:none;cursor:pointer;
+    font-family:var(--display);font-weight:700;font-size:14.5px;letter-spacing:0.03em;
+    background:linear-gradient(135deg,var(--accent-deep),var(--accent));
+    color:#0b0715;box-shadow:0 10px 26px -10px rgba(124,58,237,0.65);
+  }
+  .generate-btn:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}
+  .generate-btn:active:not(:disabled){transform:translateY(1px);}
+
+  /* signal result */
+  .signal-card{
+    border-radius:16px;padding:18px;border:1px solid var(--border);
+    background:var(--surface);
+  }
+  .signal-empty{color:var(--text-faint);font-size:13px;text-align:center;padding:10px 6px;}
+  .signal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .signal-dir{
+    font-family:var(--display);font-weight:700;font-size:26px;display:flex;align-items:center;gap:8px;
+  }
+  .signal-dir.up{color:var(--up);}
+  .signal-dir.down{color:var(--down);}
+  .signal-dir.flat{color:var(--warn);font-size:18px;}
+  .signal-conf{text-align:right;}
+  .signal-conf b{font-family:var(--mono);font-size:22px;}
+  .signal-conf span{display:block;font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.05em;}
+  .factors{margin-top:14px;display:flex;flex-direction:column;gap:6px;}
+  .factor-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;}
+  .factor-label{color:var(--text-dim);}
+  .factor-bar{flex:1;height:4px;margin:0 10px;border-radius:2px;background:var(--surface-3);position:relative;overflow:hidden;}
+  .factor-fill{position:absolute;top:0;bottom:0;border-radius:2px;}
+  .factor-fill.up{background:var(--up);}
+  .factor-fill.down{background:var(--down);}
+  .factor-val{font-family:var(--mono);width:34px;text-align:right;color:var(--text-faint);}
+  .meta-row{
+    margin-top:14px;padding-top:12px;border-top:1px solid var(--border-soft);
+    display:flex;justify-content:space-between;font-size:11px;color:var(--text-faint);
+  }
+
+  /* stats */
+  .stats-row{display:flex;gap:10px;}
+  .stat{flex:1;background:var(--surface-2);border:1px solid var(--border-soft);border-radius:12px;padding:12px;text-align:center;}
+  .stat b{display:block;font-family:var(--mono);font-size:19px;color:var(--accent-bright);}
+  .stat span{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.04em;}
+
+  /* history */
+  .hist-item{
+    display:flex;align-items:center;gap:10px;padding:10px 0;
+    border-bottom:1px solid var(--border-soft);font-size:12.5px;
+  }
+  .hist-item:last-child{border-bottom:none;}
+  .hist-dir{
+    width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-weight:700;font-size:13px;flex:none;
+  }
+  .hist-dir.up{background:var(--up-soft);color:var(--up);}
+  .hist-dir.down{background:var(--down-soft);color:var(--down);}
+  .hist-main{flex:1;min-width:0;}
+  .hist-asset{font-weight:700;color:var(--text);}
+  .hist-sub{color:var(--text-faint);font-size:11px;font-family:var(--mono);}
+  .hist-status{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;flex:none;font-family:var(--mono);}
+  .hist-status.pending{color:var(--warn);background:rgba(251,191,96,0.12);}
+  .hist-status.win{color:var(--up);background:var(--up-soft);}
+  .hist-status.loss{color:var(--down);background:var(--down-soft);}
+  .empty-hist{color:var(--text-faint);font-size:12.5px;text-align:center;padding:14px 0;}
+
+  .toast{
+    position:fixed;left:50%;bottom:24px;transform:translateX(-50%);
+    background:var(--surface-3);border:1px solid var(--border);color:var(--text);
+    padding:10px 16px;border-radius:10px;font-size:12.5px;max-width:88vw;text-align:center;
+    box-shadow:0 12px 30px -8px rgba(0,0,0,0.6);opacity:0;pointer-events:none;transition:opacity .2s;z-index:50;
+  }
+  .toast.show{opacity:1;}
+
+  footer{text-align:center;font-size:10.5px;color:var(--text-faint);line-height:1.6;padding-top:4px;}
+
+  /* access gate */
+  .gate-overlay{
+    display:none;position:fixed;inset:0;z-index:100;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(124,58,237,0.22), transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(167,139,250,0.14), transparent 45%),
+      var(--bg);
+    align-items:center;justify-content:center;padding:24px;
+  }
+  body.locked .gate-overlay{display:flex;}
+  body.locked .wrap{display:none;}
+  .gate-card{
+    width:100%;max-width:360px;background:var(--surface);border:1px solid var(--border);
+    border-radius:18px;padding:28px 24px;text-align:center;
+  }
+  .gate-mark{
+    width:46px;height:46px;border-radius:13px;margin:0 auto 16px auto;
+    background:linear-gradient(155deg,var(--accent-deep),var(--accent));
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--display);font-weight:700;font-size:20px;color:#0b0a12;
+    box-shadow:0 8px 22px -8px rgba(124,58,237,0.6);
+  }
+  .gate-title{font-family:var(--display);font-weight:600;font-style:italic;font-size:22px;margin:0 0 6px 0;}
+  .gate-sub{font-size:12.5px;color:var(--text-faint);margin:0 0 20px 0;line-height:1.5;}
+  .gate-input{
+    width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;
+    padding:12px 14px;color:var(--text);font-family:var(--mono);font-size:14px;text-align:center;
+    letter-spacing:0.05em;outline:none;text-transform:uppercase;
+  }
+  .gate-input:focus{border-color:var(--accent-deep);}
+  .gate-btn{
+    width:100%;margin-top:10px;padding:13px;border-radius:10px;border:none;cursor:pointer;
+    font-family:var(--display);font-weight:700;font-size:14px;
+    background:linear-gradient(135deg,var(--accent-deep),var(--accent));color:#0b0715;
+  }
+  .gate-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .gate-msg{min-height:18px;margin-top:12px;font-size:12px;color:var(--down);}
+  .gate-msg.ok{color:var(--up);}
+</style>
+</head>
+<body class="locked">
+<script>
+  try{
+    if(localStorage.getItem('estrategias_activated') === 'true'){
+      document.body.classList.remove('locked');
+    }
+  }catch(e){ /* keep locked if storage is unavailable */ }
+</script>
+
+<div class="gate-overlay">
+  <div class="gate-card">
+    <div class="gate-mark">E</div>
+    <h1 class="gate-title">Estrategias</h1>
+    <p class="gate-sub">Introduce tu código de acceso personal para activar el scanner en este dispositivo.</p>
+    <input type="text" class="gate-input" id="gateInput" placeholder="CÓDIGO DE ACCESO" autocomplete="off" />
+    <button class="gate-btn" id="gateBtn">Activar</button>
+    <div class="gate-msg" id="gateMsg"></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="brand">
+    <div class="brand-left">
+      <div class="mark">E</div>
+      <div>
+        <h1>Estrategias</h1>
+        <div class="tagline">Motor técnico · datos reales de mercado</div>
+      </div>
+    </div>
+    <button class="gear" id="gearBtn" title="Configurar API key" aria-label="Configuración">⚙</button>
+  </div>
+
+  <div class="disclaimer">
+    <b>Ninguna señal es garantía de ganancia.</b> Este motor calcula EMA, RSI, momentum, volatilidad y soportes/resistencias sobre velas reales de mercado (Twelve Data) — no inventa datos ni resultados. Aun así, ningún análisis técnico predice el mercado con certeza, sobre todo en expiraciones muy cortas. Eres responsable de tu dinero.
+  </div>
+
+  <div class="card" id="settingsCard">
+    <div class="card-title">
+      <span>Fuente de datos</span>
+      <span class="key-status"><span class="dot" id="keyDot"></span><span id="keyStatusText">sin clave</span></span>
+    </div>
+    <div id="settingsPanel">
+      <div class="field-label">API key de Twelve Data (gratis, sin tarjeta) — se guarda solo en tu navegador</div>
+      <div class="field-row">
+        <input type="password" id="apiKeyInput" placeholder="Pega aquí tu API key" autocomplete="off" />
+        <button class="btn" id="saveKeyBtn">Guardar</button>
+      </div>
+      <div style="font-size:11px;color:var(--text-faint);">
+        Consíguela en <a class="hint-link" href="https://twelvedata.com/pricing" target="_blank" rel="noopener">twelvedata.com</a> (plan gratuito: 800 solicitudes/día).
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Selecciona el activo</div>
+    <div class="asset-picker">
+      <input type="text" id="assetSearch" class="asset-search" placeholder="Buscar par (ej. EUR/USD, GBP/JPY...)" autocomplete="off" />
+      <div class="asset-list" id="assetList"></div>
+    </div>
+    <div class="asset-current">Activo seleccionado: <b id="assetCurrentLabel">—</b></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tiempo de expiración</div>
+    <div class="chip-grid" id="expGrid"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span>Motor de análisis (datos reales)</span>
+      <span class="engine-toggle" id="engineToggle">Ocultar</span>
+    </div>
+    <div id="engineGrid">
+      <div class="ind"><div class="ind-label">EMA 9</div><div class="ind-value" id="v-ema9">—</div></div>
+      <div class="ind"><div class="ind-label">EMA 21</div><div class="ind-value" id="v-ema21">—</div></div>
+      <div class="ind"><div class="ind-label">EMA 50</div><div class="ind-value" id="v-ema50">—</div></div>
+      <div class="ind"><div class="ind-label">RSI 14</div><div class="ind-value" id="v-rsi">—</div></div>
+      <div class="ind"><div class="ind-label">Momentum (10)</div><div class="ind-value" id="v-mom">—</div></div>
+      <div class="ind"><div class="ind-label">Volatilidad (ATR)</div><div class="ind-value" id="v-atr">—</div></div>
+      <div class="ind"><div class="ind-label">Estructura</div><div class="ind-value" id="v-struct">—</div></div>
+      <div class="ind"><div class="ind-label">Soporte / Resist.</div><div class="ind-value" id="v-sr" style="font-size:11.5px;">—</div></div>
+    </div>
+    <div class="spark-wrap">
+      <svg id="sparkline" viewBox="0 0 300 64" preserveAspectRatio="none"></svg>
+    </div>
+  </div>
+
+  <button class="generate-btn" id="genBtn" disabled>Generar señal</button>
+
+  <div class="signal-card" id="signalCard">
+    <div class="signal-empty" id="signalEmpty">Elige un par y una expiración, luego pulsa Generar señal para recibir la dirección de entrada calculada sobre datos reales.</div>
+    <div id="signalContent" style="display:none;">
+      <div class="signal-head">
+        <div class="signal-dir" id="signalDir">—</div>
+        <div class="signal-conf"><b id="signalConfNum">—</b><span>confianza</span></div>
+      </div>
+      <div class="factors" id="signalFactors"></div>
+      <div class="meta-row">
+        <span id="signalMeta">—</span>
+        <span id="signalTimer"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat"><b id="statAcc">—</b><span>precisión real</span></div>
+    <div class="stat"><b id="statCount">0</b><span>señales</span></div>
+    <div class="stat"><b id="statPending">0</b><span>pendientes</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Historial</div>
+    <div id="historyList"><div class="empty-hist">Aún no hay señales.</div></div>
+  </div>
+
+  <footer>
+    Estrategias es una herramienta de análisis técnico con fines educativos.<br/>
+    Operar instrumentos financieros implica riesgo real de pérdida de capital.
+  </footer>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- access gate ---------- */
+  var GATE_URL = 'https://script.google.com/macros/s/AKfycbwpih56GE4FNWkZjdOaoe9GTDNoFJnioExhzHMV3Oesl3PLDaGsKObFqxQO_W62-zGsUw/exec';
+
+  (function initGate(){
+    var gateInput = document.getElementById('gateInput');
+    var gateBtn = document.getElementById('gateBtn');
+    var gateMsg = document.getElementById('gateMsg');
+
+    function setMsg(text, ok){
+      gateMsg.textContent = text;
+      gateMsg.classList.toggle('ok', !!ok);
+    }
+
+    function tryActivate(){
+      var code = gateInput.value.trim();
+      if(!code){ setMsg('Escribe tu código de acceso.'); return; }
+      gateBtn.disabled = true;
+      gateBtn.textContent = 'Verificando…';
+      setMsg('');
+      fetch(GATE_URL + '?code=' + encodeURIComponent(code))
+        .then(function(res){ return res.json(); })
+        .then(function(data){
+          if(data && data.valid){
+            try{ localStorage.setItem('estrategias_activated', 'true'); }catch(e){}
+            setMsg('Activado. Cargando…', true);
+            setTimeout(function(){ document.body.classList.remove('locked'); }, 400);
+          } else {
+            setMsg((data && data.message) || 'Código no válido.');
+            gateBtn.disabled = false;
+            gateBtn.textContent = 'Activar';
+          }
+        })
+        .catch(function(){
+          setMsg('No se pudo verificar el código. Revisa tu conexión a internet.');
+          gateBtn.disabled = false;
+          gateBtn.textContent = 'Activar';
+        });
+    }
+
+    gateBtn.addEventListener('click', tryActivate);
+    gateInput.addEventListener('keydown', function(e){
+      if(e.key === 'Enter') tryActivate();
+    });
+  })();
+
+  /* ---------- storage helpers ---------- */
+  function lsGet(key, fallback){
+    try{ const v = localStorage.getItem(key); return v===null? fallback : JSON.parse(v); }
+    catch(e){ return fallback; }
+  }
+  function lsSet(key, val){
+    try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+  }
+
+  /* ---------- state ---------- */
+  const FOREX = [
+    "EUR/USD","GBP/USD","USD/JPY","USD/CHF","USD/CAD","AUD/USD","NZD/USD",
+    "EUR/GBP","EUR/JPY","EUR/CHF","EUR/AUD","EUR/CAD","EUR/NZD",
+    "GBP/JPY","GBP/CHF","GBP/AUD","GBP/CAD","GBP/NZD",
+    "AUD/JPY","AUD/CHF","AUD/CAD","AUD/NZD",
+    "CAD/JPY","CAD/CHF",
+    "CHF/JPY",
+    "NZD/JPY","NZD/CHF","NZD/CAD",
+    "USD/MXN","USD/SEK","USD/NOK","USD/SGD","USD/HKD","USD/ZAR","USD/TRY"
+  ];
+  const CRYPTO = [
+    "BTC/USD","ETH/USD","BNB/USD","SOL/USD","XRP/USD","ADA/USD",
+    "DOGE/USD","MATIC/USD","DOT/USD","AVAX/USD","LINK/USD","LTC/USD"
+  ];
+  const ASSETS = FOREX.concat(CRYPTO);
+  const EXPS = [
+    {label:"30s", seconds:30},
+    {label:"1M", seconds:60},
+    {label:"2M", seconds:120},
+    {label:"5M", seconds:300},
+    {label:"15M", seconds:900}
+  ];
+
+  let state = {
+    apiKey: lsGet('estrategias_key', ''),
+    asset: lsGet('estrategias_asset', ASSETS[0]),
+    exp: lsGet('estrategias_exp', EXPS[1].label),
+    history: lsGet('estrategias_history', []),
+    engineOpen: true,
+    candles: null
+  };
+
+  /* ---------- toast ---------- */
+  let toastTimer;
+  function toast(msg){
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>el.classList.remove('show'), 3200);
+  }
+
+  /* ---------- settings panel ---------- */
+  const settingsPanel = document.getElementById('settingsPanel');
+  const gearBtn = document.getElementById('gearBtn');
+  const apiKeyInput = document.getElementById('apiKeyInput');
+  const keyDot = document.getElementById('keyDot');
+  const keyStatusText = document.getElementById('keyStatusText');
+  const genBtn = document.getElementById('genBtn');
+
+  function refreshKeyStatus(){
+    const has = !!state.apiKey;
+    keyDot.classList.toggle('ok', has);
+    keyStatusText.textContent = has ? 'clave conectada' : 'sin clave — requerida';
+    genBtn.disabled = !has;
+    if(has) apiKeyInput.value = state.apiKey;
+  }
+  gearBtn.addEventListener('click', ()=>{
+    settingsPanel.classList.toggle('open');
+  });
+  document.getElementById('saveKeyBtn').addEventListener('click', ()=>{
+    const v = apiKeyInput.value.trim();
+    if(!v){ toast('Pega una API key válida.'); return; }
+    state.apiKey = v;
+    lsSet('estrategias_key', v);
+    refreshKeyStatus();
+    toast('API key guardada en este navegador.');
+    settingsPanel.classList.remove('open');
+  });
+  if(!state.apiKey) settingsPanel.classList.add('open');
+  refreshKeyStatus();
+
+  /* ---------- chips ---------- */
+  function buildChips(container, items, getLabel, isActive, onPick){
+    container.innerHTML = '';
+    items.forEach(item=>{
+      const b = document.createElement('button');
+      b.className = 'chip';
+      b.type = 'button';
+      b.textContent = getLabel(item);
+      b.setAttribute('aria-pressed', isActive(item) ? 'true' : 'false');
+      b.addEventListener('click', ()=>onPick(item));
+      container.appendChild(b);
+    });
+  }
+  function renderExpChips(){
+    buildChips(document.getElementById('expGrid'), EXPS,
+      e=>e.label, e=>e.label===state.exp,
+      e=>{ state.exp = e.label; lsSet('estrategias_exp', e.label); renderExpChips(); });
+  }
+  renderExpChips();
+
+  /* ---------- asset search picker ---------- */
+  const assetSearch = document.getElementById('assetSearch');
+  const assetList = document.getElementById('assetList');
+  const assetCurrentLabel = document.getElementById('assetCurrentLabel');
+
+  function selectAsset(a){
+    state.asset = a;
+    lsSet('estrategias_asset', a);
+    assetCurrentLabel.textContent = a;
+    assetSearch.value = a;
+    closeAssetList();
+    resetEngine();
+  }
+  function openAssetList(){ assetList.classList.add('open'); }
+  function closeAssetList(){ assetList.classList.remove('open'); }
+
+  function renderAssetList(filter){
+    const q = (filter || '').trim().toUpperCase().replace(/[^A-Z]/g,'');
+    const matches = ASSETS.filter(a => a.replace('/','').includes(q));
+    assetList.innerHTML = '';
+    if(matches.length === 0){
+      assetList.innerHTML = '<div class="asset-empty">Sin resultados. Prueba otro par.</div>';
+      return;
+    }
+    matches.forEach(a=>{
+      const isCrypto = CRYPTO.includes(a);
+      const item = document.createElement('div');
+      item.className = 'asset-item' + (a === state.asset ? ' selected' : '');
+      item.innerHTML = '<span>'+a+'</span><span class="asset-tag'+(isCrypto?' crypto':'')+'">'+(isCrypto?'Cripto · 24/7':'Forex')+'</span>';
+      item.addEventListener('mousedown', (e)=>{ e.preventDefault(); selectAsset(a); });
+      assetList.appendChild(item);
+    });
+  }
+
+  assetSearch.addEventListener('focus', ()=>{
+    assetSearch.select();
+    renderAssetList('');
+    openAssetList();
+  });
+  assetSearch.addEventListener('input', ()=>{
+    renderAssetList(assetSearch.value);
+    openAssetList();
+  });
+  assetSearch.addEventListener('blur', ()=>{
+    setTimeout(()=>{
+      assetSearch.value = state.asset;
+      closeAssetList();
+    }, 120);
+  });
+
+  assetSearch.value = state.asset;
+  assetCurrentLabel.textContent = state.asset;
+
+  function resetEngine(){
+    ['v-ema9','v-ema21','v-ema50','v-rsi','v-mom','v-atr','v-struct','v-sr'].forEach(id=>{
+      const el = document.getElementById(id);
+      el.textContent = '—'; el.classList.remove('up','down');
+    });
+    document.getElementById('sparkline').innerHTML = '';
+    state.candles = null;
+  }
+
+  document.getElementById('engineToggle').addEventListener('click', function(){
+    state.engineOpen = !state.engineOpen;
+    document.getElementById('engineGrid').classList.toggle('hidden', !state.engineOpen);
+    this.textContent = state.engineOpen ? 'Ocultar' : 'Mostrar';
+  });
+
+  /* ---------- indicator math (real, deterministic) ---------- */
+  function ema(values, period){
+    if(values.length < period) return null;
+    const k = 2/(period+1);
+    let seed = 0;
+    for(let i=0;i<period;i++) seed += values[i];
+    seed /= period;
+    let prev = seed;
+    for(let i=period;i<values.length;i++){
+      prev = values[i]*k + prev*(1-k);
+    }
+    return prev;
+  }
+  function rsi(closes, period){
+    if(closes.length < period+1) return null;
+    let gains=0, losses=0;
+    for(let i=1;i<=period;i++){
+      const d = closes[i]-closes[i-1];
+      if(d>=0) gains+=d; else losses-=d;
+    }
+    let avgGain = gains/period, avgLoss = losses/period;
+    for(let i=period+1;i<closes.length;i++){
+      const d = closes[i]-closes[i-1];
+      const g = d>0? d:0, l = d<0? -d:0;
+      avgGain = (avgGain*(period-1)+g)/period;
+      avgLoss = (avgLoss*(period-1)+l)/period;
+    }
+    if(avgLoss===0) return 100;
+    const rs = avgGain/avgLoss;
+    return 100 - (100/(1+rs));
+  }
+  function momentum(closes, period){
+    if(closes.length < period+1) return null;
+    return closes[closes.length-1] - closes[closes.length-1-period];
+  }
+  function atr(candles, period){
+    if(candles.length < period+1) return null;
+    const trs = [];
+    for(let i=1;i<candles.length;i++){
+      const c = candles[i], p = candles[i-1];
+      trs.push(Math.max(c.high-c.low, Math.abs(c.high-p.close), Math.abs(c.low-p.close)));
+    }
+    const last = trs.slice(-period);
+    return last.reduce((a,b)=>a+b,0)/last.length;
+  }
+  function supportResistance(candles, lookback){
+    const recent = candles.slice(-lookback);
+    const highs = recent.map(c=>c.high), lows = recent.map(c=>c.low);
+    return { support: Math.min(...lows), resistance: Math.max(...highs) };
+  }
+  function structure(candles, lookback){
+    const recent = candles.slice(-lookback);
+    const mid = Math.floor(recent.length/2);
+    const firstHalf = recent.slice(0, mid), secondHalf = recent.slice(mid);
+    const highA = Math.max(...firstHalf.map(c=>c.high)), highB = Math.max(...secondHalf.map(c=>c.high));
+    const lowA = Math.min(...firstHalf.map(c=>c.low)), lowB = Math.min(...secondHalf.map(c=>c.low));
+    if(highB>highA && lowB>lowA) return 'HH/HL (alcista)';
+    if(highB<highA && lowB<lowA) return 'LH/LL (bajista)';
+    return 'Lateral';
+  }
+
+  function decimals(asset){
+    if(asset.includes('JPY')) return 3;
+    if(asset==='BTC/USD' || asset==='ETH/USD') return 2;
+    if(CRYPTO.includes(asset)) return 4;
+    return 5;
+  }
+
+  /* ---------- data fetch ---------- */
+  async function fetchCandles(symbol){
+    const url = 'https://api.twelvedata.com/time_series?' + new URLSearchParams({
+      symbol, interval:'1min', outputsize:'120', apikey: state.apiKey
+    });
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data.status === 'error' || !data.values){
+      throw new Error(data.message || 'No se pudieron obtener datos del par.');
+    }
+    return data.values.map(v=>({
+      time: v.datetime,
+      open:+v.open, high:+v.high, low:+v.low, close:+v.close
+    })).reverse();
+  }
+  async function fetchPrice(symbol){
+    const url = 'https://api.twelvedata.com/price?' + new URLSearchParams({ symbol, apikey: state.apiKey });
+    const res = await fetch(url);
+    const data = await res.json();
+    if(!data.price) throw new Error(data.message || 'No se pudo verificar el precio.');
+    return +data.price;
+  }
+
+  /* ---------- sparkline ---------- */
+  function drawSpark(closes){
+    const svg = document.getElementById('sparkline');
+    const w=300,h=64,pad=4;
+    const min=Math.min(...closes), max=Math.max(...closes);
+    const range = (max-min)||1;
+    const step = (w-pad*2)/(closes.length-1);
+    let d='';
+    closes.forEach((c,i)=>{
+      const x = pad + i*step;
+      const y = h-pad - ((c-min)/range)*(h-pad*2);
+      d += (i===0?'M':'L') + x.toFixed(1) + ' ' + y.toFixed(1) + ' ';
+    });
+    const rising = closes[closes.length-1] >= closes[0];
+    const color = rising ? 'var(--up)' : 'var(--down)';
+    svg.innerHTML =
+      '<path d="'+d+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+  }
+
+  /* ---------- engine render ---------- */
+  function renderEngine(candles){
+    const closes = candles.map(c=>c.close);
+    const ema9 = ema(closes,9), ema21 = ema(closes,21), ema50 = ema(closes,50);
+    const rsiVal = rsi(closes,14);
+    const momVal = momentum(closes,10);
+    const atrVal = atr(candles,14);
+    const sr = supportResistance(candles,24);
+    const struct = structure(candles,24);
+    const dp = decimals(state.asset);
+
+    function setInd(id, text, cls){
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.classList.remove('up','down');
+      if(cls) el.classList.add(cls);
+    }
+    setInd('v-ema9', ema9.toFixed(dp));
+    setInd('v-ema21', ema21.toFixed(dp));
+    setInd('v-ema50', ema50.toFixed(dp));
+    setInd('v-rsi', rsiVal.toFixed(1), rsiVal>=50?'up':'down');
+    setInd('v-mom', (momVal>=0?'+':'')+momVal.toFixed(dp), momVal>=0?'up':'down');
+    setInd('v-atr', atrVal.toFixed(dp));
+    setInd('v-struct', struct, struct.includes('alcista')?'up':struct.includes('bajista')?'down':null);
+    setInd('v-sr', sr.support.toFixed(dp)+' / '+sr.resistance.toFixed(dp));
+
+    drawSpark(closes.slice(-40));
+
+    return {ema9,ema21,ema50,rsi:rsiVal,mom:momVal,atr:atrVal,sr,struct,price:closes[closes.length-1]};
+  }
+
+  /* ---------- signal scoring (transparent, rule based) ---------- */
+  function computeSignal(ind){
+    const factors = [];
+    let score = 0;
+
+    // EMA alignment
+    let emaScore = 0;
+    if(ind.ema9>ind.ema21 && ind.ema21>ind.ema50) emaScore = 1;
+    else if(ind.ema9<ind.ema21 && ind.ema21<ind.ema50) emaScore = -1;
+    factors.push({label:'Alineación EMA 9/21/50', score:emaScore, max:1});
+    score += emaScore;
+
+    // RSI position
+    let rsiScore = 0;
+    if(ind.rsi>=70) rsiScore = 0.5;
+    else if(ind.rsi>=52) rsiScore = 1;
+    else if(ind.rsi<=30) rsiScore = -0.5;
+    else if(ind.rsi<=48) rsiScore = -1;
+    factors.push({label:'RSI (14)', score:rsiScore, max:1});
+    score += rsiScore;
+
+    // Momentum
+    let momScore = ind.mom>0 ? 1 : (ind.mom<0 ? -1 : 0);
+    factors.push({label:'Momentum (10)', score:momScore, max:1});
+    score += momScore;
+
+    // Structure
+    let structScore = ind.struct.includes('alcista') ? 1 : ind.struct.includes('bajista') ? -1 : 0;
+    factors.push({label:'Estructura de mercado', score:structScore, max:1});
+    score += structScore;
+
+    // Proximity to support/resistance
+    const range = ind.sr.resistance - ind.sr.support || 1;
+    const posInRange = (ind.price - ind.sr.support) / range; // 0=support 1=resistance
+    let srScore = 0;
+    if(posInRange <= 0.25) srScore = 0.5;
+    else if(posInRange >= 0.75) srScore = -0.5;
+    factors.push({label:'Cercanía a soporte/resist.', score:srScore, max:0.5});
+    score += srScore;
+
+    const maxScore = 4.5;
+    const norm = Math.max(-1, Math.min(1, score/maxScore));
+    let direction, confidence;
+    if(Math.abs(score) < 0.5){
+      direction = 'flat';
+      confidence = 50 + Math.round(Math.abs(norm)*10);
+    } else {
+      direction = score>0 ? 'up' : 'down';
+      confidence = 50 + Math.round(Math.abs(norm)*42);
+    }
+    confidence = Math.max(18, Math.min(92, confidence));
+    return {direction, confidence, factors, score};
+  }
+
+  /* ---------- signal render ---------- */
+  const signalEmpty = document.getElementById('signalEmpty');
+  const signalContent = document.getElementById('signalContent');
+  const signalDir = document.getElementById('signalDir');
+  const signalConfNum = document.getElementById('signalConfNum');
+  const signalFactors = document.getElementById('signalFactors');
+  const signalMeta = document.getElementById('signalMeta');
+  const signalTimer = document.getElementById('signalTimer');
+
+  function renderSignal(sig, entryPrice){
+    signalEmpty.style.display = 'none';
+    signalContent.style.display = 'block';
+    signalDir.className = 'signal-dir ' + sig.direction;
+    signalDir.textContent = sig.direction==='up' ? '▲ CALL / ARRIBA' : sig.direction==='down' ? '▼ PUT / ABAJO' : '◆ SIN SEÑAL CLARA';
+    signalConfNum.textContent = sig.confidence + '%';
+
+    signalFactors.innerHTML = '';
+    sig.factors.forEach(f=>{
+      const pct = Math.round((f.score/f.max)*50 + 50); // -max..max -> 0..100
+      const row = document.createElement('div');
+      row.className = 'factor-row';
+      row.innerHTML =
+        '<span class="factor-label">'+f.label+'</span>'+
+        '<span class="factor-bar"><span class="factor-fill '+(f.score>=0?'up':'down')+'" style="left:'+(f.score>=0?50:pct)+'%;right:'+(f.score>=0?100-pct:50)+'%;"></span></span>'+
+        '<span class="factor-val">'+(f.score>0?'+':'')+f.score+'</span>';
+      signalFactors.appendChild(row);
+    });
+
+    signalMeta.textContent = state.asset + ' · ' + state.exp + ' · entrada ' + entryPrice.toFixed(decimals(state.asset));
+  }
+
+  /* ---------- history / stats ---------- */
+  const historyList = document.getElementById('historyList');
+  const statAcc = document.getElementById('statAcc');
+  const statCount = document.getElementById('statCount');
+  const statPending = document.getElementById('statPending');
+
+  function saveHistory(){ lsSet('estrategias_history', state.history); }
+
+  function renderHistory(){
+    const items = state.history;
+    if(items.length===0){
+      historyList.innerHTML = '<div class="empty-hist">Aún no hay señales.</div>';
+    } else {
+      historyList.innerHTML = '';
+      items.slice(0,25).forEach(h=>{
+        const row = document.createElement('div');
+        row.className = 'hist-item';
+        const dirArrow = h.direction==='up' ? '▲' : h.direction==='down' ? '▼' : '◆';
+        const statusLabel = h.status==='pending' ? 'pendiente' : h.status==='win' ? 'ganó' : h.status==='loss' ? 'perdió' : 'sin datos';
+        row.innerHTML =
+          '<div class="hist-dir '+(h.direction==='down'?'down':'up')+'">'+dirArrow+'</div>'+
+          '<div class="hist-main"><div class="hist-asset">'+h.asset+'</div><div class="hist-sub">'+h.exp+' · '+h.confidence+'% · '+h.timeLabel+'</div></div>'+
+          '<div class="hist-status '+h.status+'">'+statusLabel+'</div>';
+        historyList.appendChild(row);
+      });
+    }
+    const finished = items.filter(h=>h.status==='win'||h.status==='loss');
+    const wins = items.filter(h=>h.status==='win').length;
+    const pending = items.filter(h=>h.status==='pending').length;
+    statAcc.textContent = finished.length ? Math.round((wins/finished.length)*100)+'%' : '—';
+    statCount.textContent = items.length;
+    statPending.textContent = pending;
+  }
+  renderHistory();
+
+  /* ---------- verification ---------- */
+  async function verifySignal(entry){
+    try{
+      const exitPrice = await fetchPrice(entry.asset);
+      let outcome;
+      if(entry.direction==='flat'){
+        outcome = 'loss'; // an ambiguous call is scored as not actionable
+      } else if(entry.direction==='up'){
+        outcome = exitPrice > entry.entryPrice ? 'win' : 'loss';
+      } else {
+        outcome = exitPrice < entry.entryPrice ? 'win' : 'loss';
+      }
+      entry.status = outcome;
+      entry.exitPrice = exitPrice;
+    }catch(e){
+      entry.status = 'nodata';
+    }
+    saveHistory();
+    renderHistory();
+  }
+
+  /* ---------- generate ---------- */
+  genBtn.addEventListener('click', async ()=>{
+    if(!state.apiKey){ toast('Agrega tu API key primero.'); return; }
+    genBtn.disabled = true;
+    genBtn.textContent = 'Consultando mercado…';
+    try{
+      const candles = await fetchCandles(state.asset);
+      state.candles = candles;
+      const ind = renderEngine(candles);
+      const sig = computeSignal(ind);
+      renderSignal(sig, ind.price);
+
+      const expObj = EXPS.find(e=>e.label===state.exp);
+      const entry = {
+        id: Date.now(),
+        asset: state.asset,
+        exp: state.exp,
+        direction: sig.direction,
+        confidence: sig.confidence,
+        entryPrice: ind.price,
+        status: 'pending',
+        timeLabel: new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})
+      };
+      state.history.unshift(entry);
+      saveHistory();
+      renderHistory();
+
+      let remaining = expObj.seconds;
+      signalTimer.textContent = 'verificando en ' + remaining + 's';
+      const tick = setInterval(()=>{
+        remaining -= 1;
+        if(remaining<=0){
+          clearInterval(tick);
+          signalTimer.textContent = 'verificado';
+        } else {
+          signalTimer.textContent = 'verificando en ' + remaining + 's';
+        }
+      },1000);
+      setTimeout(()=>verifySignal(entry), expObj.seconds*1000);
+
+    }catch(err){
+      toast(err.message || 'Error al consultar el mercado.');
+    }finally{
+      genBtn.disabled = !state.apiKey;
+      genBtn.textContent = 'Generar señal';
+    }
+  });
+
+  // resume verification for any pending entries left over from a previous session
+  state.history.filter(h=>h.status==='pending').forEach(h=>{
+    verifySignal(h); // best-effort immediate check on reload
+  });
+
+})();
+</script>
+</body>
+</html>
